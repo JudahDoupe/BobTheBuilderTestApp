@@ -36,12 +36,11 @@ fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
         .insert_resource(ClickCount(0))
-        .init_state::<GameState>() // Change from init_resource to init_resource for GameState
-        .add_event::<ClickEvent>() // Register ClickEvent
-        .add_event::<ResetEvent>() // Register ResetEvent
+        .init_state::<GameState>()
+        .add_event::<ClickEvent>()
+        .add_event::<ResetEvent>()
         .add_systems(
-            Update,
-            (count_clicks, reset_count).run_if(in_state(GameState::Running))
+            Update, (count_clicks, reset_count).run_if(in_state(GameState::Running))
         )
         .run();
 }
