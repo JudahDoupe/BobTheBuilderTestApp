@@ -6,9 +6,6 @@ struct ClickCount(u32);
 #[derive(Event)]
 struct ClickEvent;
 
-#[derive(Event)]
-struct ResetEvent; // Define the ResetEvent struct
-
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
 enum GameState {
     #[default]
@@ -32,11 +29,14 @@ fn increment(n: u32) -> u32 {
     n + 1
 }
 
+#[derive(Event)]
+struct ResetEvent;
+
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
         .insert_resource(ClickCount(0))
-        .init_state::<GameState>()  // Change from init_resource to init_resource for GameState
+        .init_state::<GameState>() // Change from init_resource to init_resource for GameState
         .add_event::<ClickEvent>() // Register ClickEvent
         .add_event::<ResetEvent>() // Register ResetEvent
         .add_systems(
