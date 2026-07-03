@@ -6,6 +6,9 @@ struct ClickCount(u32);
 #[derive(Event)]
 struct ClickEvent;
 
+#[derive(Event)]
+struct ResetEvent; // Define the ResetEvent struct
+
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
 enum GameState {
     #[default]
@@ -13,10 +16,13 @@ enum GameState {
     Paused,
 }
 
-fn count_clicks(mut clicks: EventReader<ClickEvent>, mut reset_events: EventReader<ResetEvent>, mut count: ResMut<ClickCount>) {
+fn count_clicks(mut clicks: EventReader<ClickEvent>, mut count: ResMut<ClickCount>) {
     for _ in clicks.read() {
         count.0 = increment(count.0);
     }
+}
+
+fn reset_count(mut reset_events: EventReader<ResetEvent>, mut count: ResMut<ClickCount>) {
     for _ in reset_events.read() {
         count.0 = 0;
     }
@@ -26,16 +32,17 @@ fn increment(n: u32) -> u32 {
     n + 1
 }
 
-#[derive(Event)]
-struct ResetEvent; // Define the ResetEvent struct
-
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins)
-        .init_resource::<ClickCount>()
-        .init_state::<GameState>()  // Change from insert_resource to init_resource for GameState
+        .insert_resource(ClickCount(0))
+        .init_state::<GameState>()  // Change from init_resource to init_resource for GameState
         .add_event::<ClickEvent>() // Register ClickEvent
         .add_event::<ResetEvent>() // Register ResetEvent
+        .add_systems(
+            Update,
+            (count_clicks, reset_count).run_if(in_state(GameState::Running))
+        )
         .run();
 }
 
