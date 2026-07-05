@@ -14,6 +14,16 @@ struct ClickCount(u32);
 #[derive(Event)]
 struct ClickEvent;
 
+/// Reset the tally to 0 when 'R' is pressed.
+fn reset_on_r(
+    keys: Res<ButtonInput<KeyCode>>,
+    mut count: ResMut<ClickCount>,
+) {
+    if keys.just_pressed(KeyCode::KeyR) {
+        count.0 = 0;
+    }
+}
+
 /// Advance the tally by one for every click received this frame.
 fn count_clicks(mut clicks: EventReader<ClickEvent>, mut count: ResMut<ClickCount>) {
     for _ in clicks.read() {
@@ -31,7 +41,7 @@ fn main() {
         .add_plugins(MinimalPlugins.set(ScheduleRunnerPlugin::run_once()))
         .init_resource::<ClickCount>()
         .add_event::<ClickEvent>()
-        .add_systems(Update, count_clicks)
+        .add_systems(Update, (count_clicks, reset_on_r))
         .run();
 }
 
