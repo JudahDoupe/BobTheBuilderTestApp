@@ -3,51 +3,26 @@
 //! Kept deliberately tiny: it exists so the orchestrator's verification harness has a
 //! real Bevy project to `cargo build` + `cargo test` against.
 
+mod counter;
+
 use bevy::app::ScheduleRunnerPlugin;
 use bevy::prelude::*;
 
-/// The running tally of clicks.
-#[derive(Resource, Default)]
-struct ClickCount(u32);
-
-/// Fired when the player clicks the button.
-#[derive(Event)]
-struct ClickEvent;
-
-/// Reset the tally to 0 when 'R' is pressed.
-fn reset_on_r(
-    keys: Res<ButtonInput<KeyCode>>,
-    mut count: ResMut<ClickCount>,
-) {
-    if keys.just_pressed(KeyCode::KeyR) {
-        count.0 = 0;
-    }
-}
-
-/// Advance the tally by one for every click received this frame.
-fn count_clicks(mut clicks: EventReader<ClickEvent>, mut count: ResMut<ClickCount>) {
-    for _ in clicks.read() {
-        count.0 = increment(count.0);
-    }
-}
-
-/// Pure counting logic — unit-testable without spinning up an `App`.
-fn increment(n: u32) -> u32 {
-    n + 1
-}
+// Re-export counter module symbols for use in main() and tests.
+pub(crate) use counter::{increment, ClickCount, ClickEvent};
 
 fn main() {
     App::new()
         .add_plugins(MinimalPlugins.set(ScheduleRunnerPlugin::run_once()))
         .init_resource::<ClickCount>()
         .add_event::<ClickEvent>()
-        .add_systems(Update, (count_clicks, reset_on_r))
+        .add_systems(Update, (counter::count_clicks, counter::reset_on_r))
         .run();
 }
 
 #[cfg(test)]
 mod tests {
-    use super::increment;
+    use crate::increment;
 
     #[test]
     fn increment_adds_one() {
