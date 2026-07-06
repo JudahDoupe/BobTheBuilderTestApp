@@ -3,9 +3,21 @@ name = "button-clicker"
 version = "0.1.0"
 edition = "2021"
 
-# Pinned intentionally: the Bevy Knowledge Provider reads this (and Cargo.lock,
-# generated on first `cargo build`) to inject version-correct API facts.
-# default-features = false keeps the build headless so it compiles in a plain
-# rust container with no display / audio system libraries.
+# The Bevy Knowledge Provider reads this (and Cargo.lock, generated on first
+# `cargo build`) to inject version-correct API facts.
+#
+# This app now renders a real on-screen UI (issue #9), so the render/UI/text
+# feature stack is enabled explicitly (default-features stays off so we opt in
+# to exactly what we use). `x11` gives winit a Linux backend; `default_font`
+# embeds a font so text needs no asset loading.
 [dependencies]
-bevy = { version = "0.15", default-features = false, features = ["bevy_state"] }
+bevy = { version = "0.15", default-features = false, features = [
+  "bevy_state",
+  "bevy_render",
+  "bevy_core_pipeline",
+  "bevy_ui",
+  "bevy_text",
+  "bevy_winit",
+  "x11",
+  "default_font",
+] }
