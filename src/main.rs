@@ -1,22 +1,32 @@
-//! Button Clicker — you click a button and a number goes up. That is the only feature.
+//! Button Clicker — a number you increase by clicking a button (issue #9 added the UI).
 //!
-//! Kept deliberately tiny: it exists so the orchestrator's verification harness has a
-//! real Bevy project to `cargo build` + `cargo test` against.
+//! Renders an on-screen counter with Increment / Reset buttons via `DefaultPlugins`.
+//! The pure counting logic still lives in `counter` so it stays unit-testable without
+//! spinning up a window.
 
 mod counter;
+mod ui;
 
-use bevy::app::ScheduleRunnerPlugin;
 use bevy::prelude::*;
 
-// Re-export counter module symbols for use in main() and tests.
+// Re-export counter symbols for use in main() and tests.
 pub(crate) use counter::{increment, ClickCount, ClickEvent};
 
 fn main() {
     App::new()
-        .add_plugins(MinimalPlugins.set(ScheduleRunnerPlugin::run_once()))
+        .add_plugins(DefaultPlugins)
         .init_resource::<ClickCount>()
         .add_event::<ClickEvent>()
-        .add_systems(Update, (counter::count_clicks, counter::reset_on_r))
+        .add_systems(Startup, ui::spawn_ui)
+        .add_systems(
+            Update,
+            (
+                ui::handle_buttons,
+                counter::count_clicks,
+                counter::reset_on_r,
+                ui::update_count_text,
+            ),
+        )
         .run();
 }
 
