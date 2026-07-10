@@ -8,8 +8,14 @@ edition = "2021"
 #
 # This app now renders a real on-screen UI (issue #9), so the render/UI/text
 # feature stack is enabled explicitly (default-features stays off so we opt in
-# to exactly what we use). `x11` gives winit a Linux backend; `default_font`
-# embeds a font so text needs no asset loading.
+# to exactly what we use). `default_font` embeds a font so text needs no asset
+# loading.
+#
+# The render backend is split by target so the same crate builds both ways
+# (BuilderBot live preview, NEXT-STEPS §6): native gets winit's `x11` Linux
+# backend (used by `cargo build`/`test` verify), wasm gets `webgl2`. Cargo
+# UNIONS features across a crate's declarations, so the common stack below plus
+# the per-target feature compose into one dependency.
 [dependencies]
 bevy = { version = "0.15", default-features = false, features = [
   "bevy_state",
@@ -18,6 +24,14 @@ bevy = { version = "0.15", default-features = false, features = [
   "bevy_ui",
   "bevy_text",
   "bevy_winit",
-  "x11",
   "default_font",
 ] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+bevy = { version = "0.15", default-features = false, features = ["x11"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+bevy = { version = "0.15", default-features = false, features = ["webgl2"] }
+# getrandom (pulled transitively via rand) needs its browser backend on wasm; the
+# `wasm_js` feature pairs with the `getrandom_backend` cfg in .cargo/config.toml.
+getrandom = { version = "0.3", features = ["wasm_js"] }

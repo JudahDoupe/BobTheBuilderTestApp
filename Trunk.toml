@@ -1,0 +1,6 @@
+# Web build config for the live preview (BuilderBot NEXT-STEPS §6). The deploy
+# step runs `trunk build --release --public-url <slot> --dist <slot-dir>`, so
+# the per-slot public-url / dist are passed on the CLI, not pinned here.
+[build]
+dist = "dist"
+release = true

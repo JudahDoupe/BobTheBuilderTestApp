@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Button Clicker</title>
+    <!-- Trunk compiles this crate to wasm + runs wasm-bindgen, then injects the
+         loader script. Bevy's DefaultPlugins create their own <canvas> under
+         <body> on wasm, so no explicit canvas element is needed. -->
+    <link data-trunk rel="rust" data-wasm-opt="z" />
+    <style>
+      html, body { margin: 0; height: 100%; background: #f5e8c8; }
+      canvas { display: block; outline: none; }
+    </style>
+  </head>
+  <body></body>
+</html>
