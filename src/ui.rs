@@ -46,16 +46,27 @@ pub fn spawn_ui(mut commands: Commands) {
             BackgroundColor(BEIGE),
         ))
         .with_children(|root| {
-            // The number, front and centre.
+            // The count, front and centre with percentage sizing so it scales with the viewport.
             root.spawn((
-                Text::new("0"),
-                TextFont {
-                    font_size: 96.0,
+                Node {
+                    width: Val::Percent(80.0),
+                    height: Val::Percent(5.0),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
                     ..default()
                 },
-                TextColor(DARK_GREY),
-                CountText,
-            ));
+            ))
+            .with_children(|count_area| {
+                count_area.spawn((
+                    Text::new("0"),
+                    TextFont {
+                        font_size: 96.0,
+                        ..default()
+                    },
+                    TextColor(DARK_GREY),
+                    CountText,
+                ));
+            });
             // Increment (green) then Reset (blue), stacked underneath.
             spawn_button(root, "Increment", GREEN, IncrementButton);
             spawn_button(root, "Reset", BLUE, ResetButton);
@@ -68,24 +79,7 @@ fn spawn_button(parent: &mut ChildBuilder, label: &str, color: Color, marker: im
         Button,
         Node {
             width: Val::Percent(100.0),
-            height: Val::Px(48.0),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            flex_grow: 0.5,
-            margin: UiRect::horizontal(Val::Percent(5.0)),
-            ..default()
-        },
-        BackgroundColor(color),
-    ));
-}
-
-/// Spawns a button with children (label text) in one call, using relative sizing.
-fn spawn_button_with_label(parent: &mut ChildBuilder, label: &str, color: Color, marker: impl Component) {
-    parent.spawn((
-        Button,
-        Node {
-            width: Val::Percent(100.0),
-            height: Val::Px(48.0),
+            height: Val::Percent(6.0),
             justify_content: JustifyContent::Center,
             align_items: AlignItems::Center,
             flex_grow: 0.5,
@@ -152,4 +146,3 @@ mod tests {
         }
     }
 }
-
