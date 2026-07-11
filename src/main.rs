@@ -14,7 +14,9 @@ pub(crate) use counter::{increment, ClickCount, ClickEvent};
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(
+            DefaultPlugins,
+        )
         .init_resource::<ClickCount>()
         .add_event::<ClickEvent>()
         .add_systems(Startup, ui::spawn_ui)
