@@ -40,6 +40,7 @@ pub fn spawn_ui(mut commands: Commands) {
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 row_gap: Val::Px(24.0),
+                padding: UiRect::all(Val::Px(32.0)),
                 ..default()
             },
             BackgroundColor(BEIGE),
@@ -63,46 +64,62 @@ pub fn spawn_ui(mut commands: Commands) {
 
 /// Spawns a labelled button carrying `marker`, as a child of `parent`.
 fn spawn_button(parent: &mut ChildBuilder, label: &str, color: Color, marker: impl Component) {
-    parent
-        .spawn((
-            Button,
-            Node {
-                width: Val::Px(220.0),
-                height: Val::Px(64.0),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
+    parent.spawn((
+        Button,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Px(48.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_grow: 0.5,
+            margin: UiRect::horizontal(Val::Percent(5.0)),
+            ..default()
+        },
+        BackgroundColor(color),
+    ));
+}
+
+/// Spawns a button with children (label text) in one call, using relative sizing.
+fn spawn_button_with_label(parent: &mut ChildBuilder, label: &str, color: Color, marker: impl Component) {
+    parent.spawn((
+        Button,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Px(48.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_grow: 0.5,
+            margin: UiRect::horizontal(Val::Percent(5.0)),
+            ..default()
+        },
+        BackgroundColor(color),
+    )).with_children(|button| {
+        button.spawn((
+            Text::new(label),
+            TextFont {
+                font_size: 28.0,
                 ..default()
             },
-            BackgroundColor(color),
-            marker,
-        ))
-        .with_children(|button| {
-            button.spawn((
-                Text::new(label),
-                TextFont {
-                    font_size: 28.0,
-                    ..default()
-                },
-                TextColor(Color::WHITE),
-            ));
-        });
+            TextColor(Color::WHITE),
+        ));
+    });
 }
 
 /// Translates button presses into the existing counter pipeline: the increment button
 /// fires a [`ClickEvent`] (consumed by `counter::count_clicks`, the single source of truth
 /// for the tally), while the reset button zeroes [`ClickCount`] directly.
 pub fn handle_buttons(
-    increment: Query<&Interaction, (Changed<Interaction>, With<IncrementButton>)>,
-    reset: Query<&Interaction, (Changed<Interaction>, With<ResetButton>)>,
+    mut increment: Query<&Interaction, (Changed<Interaction>, With<IncrementButton>)>,
+    mut reset: Query<&Interaction, (Changed<Interaction>, With<ResetButton>)>,
     mut clicks: EventWriter<ClickEvent>,
     mut count: ResMut<ClickCount>,
 ) {
-    for interaction in &increment {
+    for interaction in &mut increment {
         if *interaction == Interaction::Pressed {
             clicks.send(ClickEvent);
         }
     }
-    for interaction in &reset {
+    for interaction in &mut reset {
         if *interaction == Interaction::Pressed {
             count.0 = 0;
         }
@@ -135,3 +152,4 @@ mod tests {
         }
     }
 }
+
