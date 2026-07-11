@@ -12,10 +12,22 @@ use bevy::prelude::*;
 // Re-export counter symbols for use in main() and tests.
 pub(crate) use counter::{increment, ClickCount, ClickEvent};
 
+/// Returns the primary window configuration for automatic device resolution scaling.
+fn make_primary_window() -> Option<Window> {
+    Some(Window {
+        resizable: true,
+        fit_canvas_to_parent: true,
+        ..default()
+    })
+}
+
 fn main() {
     App::new()
         .add_plugins(
-            DefaultPlugins,
+            DefaultPlugins.set(WindowPlugin {
+                primary_window: make_primary_window(),
+                ..default()
+            }),
         )
         .init_resource::<ClickCount>()
         .add_event::<ClickEvent>()
