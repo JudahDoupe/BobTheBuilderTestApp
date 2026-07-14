@@ -7,7 +7,7 @@ use bevy::prelude::*;
 pub struct GameplayArea {}
 
 /// Resizes the gameplay area to `min(viewport_width, viewport_height)` pixels on both axes.
-pub fn fnsized_gameplay_area(
+pub fn sized_gameplay_area(
     mut query: Query<&mut Node, With<GameplayArea>>,
     primary_window: Query<&'static Window>,
 ) {
