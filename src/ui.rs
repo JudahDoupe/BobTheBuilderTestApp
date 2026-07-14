@@ -23,6 +23,10 @@ pub struct CountText;
 #[derive(Component)]
 pub struct IncrementButton;
 
+/// Marks the game interaction area.
+#[derive(Component)]
+pub struct GameplayArea;
+
 /// Marks the blue reset button.
 #[derive(Component)]
 pub struct ResetButton;
@@ -45,19 +49,28 @@ pub fn spawn_ui(mut commands: Commands) {
             BackgroundColor(BEIGE),
         ))
         .with_children(|root| {
-            // The number, front and centre.
             root.spawn((
-                Text::new("0"),
-                TextFont {
-                    font_size: 96.0,
+                Node {
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
                     ..default()
                 },
-                TextColor(DARK_GREY),
-                CountText,
-            ));
-            // Increment (green) then Reset (blue), stacked underneath.
-            spawn_button(root, "Increment", GREEN, IncrementButton);
-            spawn_button(root, "Reset", BLUE, ResetButton);
+                GameplayArea,
+            )).with_children(|area| {
+                // The number, front and centre.
+                area.spawn((
+                    Text::new("0"),
+                    TextFont {
+                        font_size: 96.0,
+                        ..default()
+                    },
+                    TextColor(DARK_GREY),
+                    CountText,
+                ));
+                // Increment (green) then Reset (blue), stacked underneath.
+                spawn_button(area, "Increment", GREEN, IncrementButton);
+                spawn_button(area, "Reset", BLUE, ResetButton);
+            });
         });
 }
 
