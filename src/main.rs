@@ -6,6 +6,7 @@
 
 mod counter;
 mod ui;
+mod gameplay_area;
 
 use bevy::prelude::*;
 
