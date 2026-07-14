@@ -6,6 +6,7 @@
 
 mod counter;
 mod ui;
+pub mod gameplay_area;
 
 use bevy::prelude::*;
 
@@ -21,6 +22,7 @@ fn main() {
         .add_systems(
             Update,
             (
+                gameplay_area::sized_gameplay_area,
                 ui::handle_buttons,
                 counter::count_clicks,
                 counter::reset_on_r,
