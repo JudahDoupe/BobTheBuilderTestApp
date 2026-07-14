@@ -80,8 +80,8 @@ fn spawn_button(parent: &mut ChildBuilder, label: &str, color: Color, marker: im
         .spawn((
             Button,
             Node {
-                width: Val::Px(220.0),
-                height: Val::Px(64.0),
+                width: Val::Percent(80.0),
+                height: Val::Percent(10.0),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..default()
